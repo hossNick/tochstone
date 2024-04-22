@@ -4,6 +4,7 @@ import com.train.touchstone.user.domain.AuthUser;
 import com.train.touchstone.user.dto.UserGetDto;
 import com.train.touchstone.user.dto.UserPostDto;
 import com.train.touchstone.user.repositories.AuthUserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,9 +13,11 @@ import java.util.List;
 public class UserService {
 
     private final AuthUserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(AuthUserRepository userRepository) {
+    public UserService(AuthUserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -27,12 +30,8 @@ public class UserService {
         userRepository.save(convertFromPostDto(user, postDto));
     }
 
-    public void updateUser(Long id, UserPostDto userPostDto) {
-        AuthUser user = findOrThrow(id);
-        userRepository.save(convertFromPostDto(user, userPostDto));
-    }
 
-    public AuthUser findByEmail(String email){
+    public AuthUser findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("no user for " + email));
     }
@@ -44,11 +43,11 @@ public class UserService {
     }
 
 
-
     private AuthUser convertFromPostDto(AuthUser user, UserPostDto postDto) {
         user.setFirstName(postDto.getFirstName());
         user.setLastName(postDto.getLastName());
         user.setEmail(postDto.getEmail());
+        user.setPassword(passwordEncoder.encode(postDto.getPassword()));
         return user;
     }
 

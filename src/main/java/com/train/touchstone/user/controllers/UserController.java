@@ -32,10 +32,4 @@ public class UserController {
     }
 
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updateUser(@PathVariable Long id, @RequestBody UserPostDto postDto) {
-        userService.updateUser(id, postDto);
-        return ResponseEntity.ok().build();
-    }
-
 }

@@ -14,4 +14,5 @@ public class UserPostDto {
     @NotEmpty
     @Email
     private String email;
+    private String password;
 }
