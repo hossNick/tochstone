@@ -24,8 +24,6 @@ public class JwtTokenService implements Serializable {
     private static final long serialVersionUID = -2550185165626007488L;
     public static final String EMAIL_KEY = "email";
     public static final String AUTHORITIES_KEY = "EMAIL";
-    public static final String RANDOM_KEY = "EXPIRE";
-
     public static final long JWT_TOKEN_VALIDITY = 60000;
     @Value("${jwt.secret}")
     private String secret;
@@ -39,7 +37,6 @@ public class JwtTokenService implements Serializable {
     }
 
     public String validateChangeToken(String changeToken) {
-
         Map<String, Object> claims = getCustomClaimFromToken(changeToken);
         if (claims.get(AUTHORITIES_KEY) == null) {
             throw new BadCredentialsException("wrong token");
@@ -48,7 +45,6 @@ public class JwtTokenService implements Serializable {
         if (jwt.getExpiresAt().before(new Date())) {
             throw new BadCredentialsException("expire token");
         }
-
         return String.valueOf(claims.get("sub"));
     }
 

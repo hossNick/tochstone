@@ -28,7 +28,8 @@ import java.util.List;
 public class SecurityConfig {
 
     private final UserService userService;
-    private final JwtTokenFilter jwtTokenFilter;
+    private final JwtTokenService jwtTokenService;
+    private final PasswordEncoder passwordEncoder;
     private static final String[] AUTH_WHITELIST = {
             "/api/v1/auth/**",
             "/api/v1/user/manage"
@@ -41,7 +42,7 @@ public class SecurityConfig {
                         auth.requestMatchers(AUTH_WHITELIST).permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .cors(c -> {
                     CorsConfigurationSource cs = r -> {
                         CorsConfiguration cc = new CorsConfiguration();
@@ -62,9 +63,10 @@ public class SecurityConfig {
     }
 
 
+
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public JwtTokenFilter jwtTokenFilter(){
+        return new JwtTokenFilter(jwtTokenService,userDetailsService());
     }
 
 
@@ -76,7 +78,13 @@ public class SecurityConfig {
 
     @Bean
     public LoginProvider loginProvider() {
-        return new LoginProvider(passwordEncoder(), userService);
+        return new LoginProvider(passwordEncoder, userService);
+    }
+
+
+    @Bean
+    UserDetailsService userDetailsService() {
+        return userService::findByEmail;
     }
 
 
