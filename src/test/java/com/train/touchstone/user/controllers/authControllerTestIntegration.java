@@ -83,6 +83,26 @@ class AuthControllerTestIntegration {
                 .andExpect(status().is(403));
     }
 
+    @Test
+    void runActionWithToken() throws Exception {
+        initUser();
+        LoginDto loginDto = new LoginDto();
+        loginDto.setPassword(userOnePassword);
+        loginDto.setEmail(userOneEmail);
+
+        String userOneJsonDto = objectMapper.writeValueAsString(loginDto);
+        MvcResult mvcResult = mockMvc.perform(post("/api/v1/auth/login").servletPath("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON).content(userOneJsonDto))
+                .andExpect(status().isOk())
+                .andReturn();
+        String response = mvcResult.getResponse().getContentAsString();
+        JSONObject jsonObject = new JSONObject(response);
+        String userOneJwt = jsonObject.getString("token");
+
+        mockMvc.perform(get("/api/v1/action").contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization",userOneJwt))
+                .andExpect(status().isOk());
+    }
 
     private void initUser() {
         try {
