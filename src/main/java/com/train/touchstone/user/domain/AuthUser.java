@@ -42,7 +42,7 @@ public class AuthUser implements UserDetails {
     private String password;
 
     @Column(name = "role")
-    private String role;
+    private String role = "ADMIN";
 
     @NotNull
     @Column(name = "created_at", nullable = false)

@@ -31,8 +31,8 @@ public class SecurityConfig {
     private final JwtTokenService jwtTokenService;
     private final PasswordEncoder passwordEncoder;
     private static final String[] AUTH_WHITELIST = {
-            "/api/v1/auth/**",
-            "/api/v1/user/manage"
+            "/api/v1/auth/login",
+            "/api/v1/user/manage/**"
     };
 
     @Bean
